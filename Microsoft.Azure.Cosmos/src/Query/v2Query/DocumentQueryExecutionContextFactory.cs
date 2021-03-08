@@ -102,6 +102,7 @@ namespace Microsoft.Azure.Cosmos.Query
                     isContinuationExpected: isContinuationExpected,
                     allowNonValueAggregateQuery: true,
                     hasLogicalPartitionKey: feedOptions.PartitionKey != null,
+                    allowDCount: true,
                     cancellationToken: token);
 
                 if (DocumentQueryExecutionContextFactory.ShouldCreateSpecializedDocumentQueryExecutionContext(
@@ -194,7 +195,8 @@ namespace Microsoft.Azure.Cosmos.Query
                       partitionedQueryExecutionInfo,
                       isContinuationExpected) ||
                   DocumentQueryExecutionContextFactory.IsDistinctQuery(partitionedQueryExecutionInfo) ||
-                  DocumentQueryExecutionContextFactory.IsGroupByQuery(partitionedQueryExecutionInfo);
+                  DocumentQueryExecutionContextFactory.IsGroupByQuery(partitionedQueryExecutionInfo) ||
+                  DocumentQueryExecutionContextFactory.IsDCountQuery(partitionedQueryExecutionInfo);
         }
 
         private static bool IsCrossPartitionQuery(
@@ -244,6 +246,11 @@ namespace Microsoft.Azure.Cosmos.Query
         private static bool IsGroupByQuery(PartitionedQueryExecutionInfo partitionedQueryExecutionInfo)
         {
             return partitionedQueryExecutionInfo.QueryInfo.HasGroupBy;
+        }
+
+        private static bool IsDCountQuery(PartitionedQueryExecutionInfo partitionedQueryExecutionInfo)
+        {
+            return partitionedQueryExecutionInfo.QueryInfo.HasDCount;
         }
 
         private static bool TryGetEpkProperty(
